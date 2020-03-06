@@ -345,6 +345,9 @@ usage ()
 
     -v view the latest entry using \$MY_VIEWER
 
+    -V <entry> (yyyy-mm-dd)
+        view specific entry using \$MY_VIEWER
+
 EOF
 
 }
