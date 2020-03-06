@@ -12,6 +12,7 @@ author="Ankur Sinha"
 year_to_compile="meh"
 entry_to_compile="meh"
 entry_to_edit="meh"
+entry_to_view="meh"
 style_file="research_diary.sty"
 other_files_path="other_files/"
 images_files_path="images/"
@@ -296,6 +297,15 @@ edit_specific ()
     $MY_EDITOR "$diary_dir/$year/$entry_to_edit.tex"
 }
 
+view_specific ()
+{
+    year=${entry_to_view:0:4}
+    if [ ! -d "$pdf_dir/$year/" ]; then
+      echo "$pdf_dir/$year/ does not exist. Exiting."
+      exit -1
+    fi
+    $MY_VIEWER "$pdf_dir/$year/$entry_to_view.pdf"
+}
 
 view_latest ()
 {
@@ -344,7 +354,7 @@ if [ "$#" -eq 0 ]; then
     exit 0
 fi
 
-while getopts "evLltca:hp:s:E:" OPTION
+while getopts "evLltca:hp:s:E:V:" OPTION
 do
     case $OPTION in
         t)
@@ -393,6 +403,11 @@ do
         E)
             entry_to_edit=$OPTARG
             edit_specific
+            exit 0
+            ;;
+        V)
+            entry_to_view=$OPTARG
+            view_specific
             exit 0
             ;;
         ?)
