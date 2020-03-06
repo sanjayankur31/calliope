@@ -67,6 +67,12 @@ Usage
     -s  <entry> (yyyy-mm-dd)
         Compile specific entry
 
+    -e edit the latest entry using $MY_EDITOR
+
+    -E <entry> (yyyy-mm-dd)
+        edit specific entry using $MY_EDITOR
+
+    -v view the latest entry using $MY_VIEWER
 
 
 Set up
