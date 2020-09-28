@@ -81,7 +81,6 @@ compile_today ()
     echo "Compiling $todays_entry."
     if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$todays_entry" ; then
         echo "Compilation failed. Exiting."
-        clean
         cd ../../ || exit -1
         exit -1
     fi
@@ -111,7 +110,6 @@ compile_latest ()
 
     if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$latest_entry" ; then
         echo "Compilation failed. Exiting."
-        clean
         cd ../../ || exit -1
         exit -1
     fi
@@ -138,7 +136,6 @@ compile_all ()
     for i in "$year_to_compile"-*.tex ; do
       if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$i"; then
             echo "Compilation failed. Exiting."
-            clean
             cd ../../ || exit -1
             exit -1
         fi
@@ -165,7 +162,6 @@ compile_specific ()
     echo "Compiling $entry_to_compile"
     if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$entry_to_compile"; then
         echo "Compilation failed. Exiting."
-        clean
         cd ../../ || exit -1
         exit -1
     fi
@@ -268,7 +264,6 @@ create_anthology ()
 
     if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$FileName"; then
         echo "Compilation failed. Exiting."
-        clean
         cd ../ || exit -1
         exit -1
     fi
