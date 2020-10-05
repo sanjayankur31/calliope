@@ -131,21 +131,23 @@ compile_all ()
       exit -1
     fi
 
+    if [ ! -d "../../$pdf_dir/$year_to_compile" ]; then
+        mkdir -p ../../$pdf_dir/$year_to_compile
+    fi
+
     cd "$diary_dir/$year_to_compile/" || exit -1
     echo "Compiling all in $year_to_compile."
     for i in "$year_to_compile"-*.tex ; do
       if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$i"; then
-            echo "Compilation failed. Exiting."
-            cd ../../ || exit -1
-            exit -1
-        fi
+          echo "Compilation failed at $i. Exiting."
+          cd ../../ || exit -1
+          exit -1
+      fi
+      mv -- *.pdf "../../$pdf_dir/$year_to_compile/"
+      echo "Generated pdf for $i moved to pdfs directory."
       clean
     done
 
-    if [ ! -d "../../$pdf_dir/$year_to_compile" ]; then
-        mkdir -p ../../$pdf_dir/$year_to_compile
-    fi
-    mv -- *.pdf "../../$pdf_dir/$year_to_compile/"
     echo "Generated pdf moved to pdfs directory."
     cd ../../ || exit -1
 }
