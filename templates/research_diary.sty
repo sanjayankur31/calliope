@@ -42,14 +42,14 @@
 \pdfcompresslevel=9
 \pdfadjustspacing=1 
 \hypersetup{
-    pdftitle={Research Diary - \workingDate},                    % title
-    pdfauthor={\userName $\;$},                   % author
-    pdfsubject={Research diary},                  % subject
-    colorlinks=true,        % false: boxed links; true: colored links
-    linkcolor=darkblue,     % color of internal links
-    citecolor=green,        % color of links to bibliography
-    filecolor=magenta,      % color of file links
-    urlcolor=blue,          % color of external links
+  pdftitle={\projectName{} Research Diary - \workingDate},                    % title
+  pdfauthor={\userName$\;$},                   % author
+  pdfsubject={\projectName{} Research diary},% subject
+  colorlinks=true,        % false: boxed links; true: colored links
+  linkcolor=darkblue,     % color of internal links
+  citecolor=green,        % color of links to bibliography
+  filecolor=magenta,      % color of file links
+  urlcolor=blue,          % color of external links
 }
 \usepackage{jneurosci}
 
@@ -59,8 +59,8 @@
 \setlength\headheight{15pt}
 
 %%%%%%%%%%% HEADER / FOOTER %%%%%%%%%%%
-\rhead{\workingDate}
-\chead{\textsc{Research Diary}}
+\rhead{\workingDate{}}
+\chead{\textsc{\projectName{} Research Diary}}
 \lhead{\textsc{\userName}}
 \rfoot{\textsc{\thepage}}
 \cfoot{\textit{Last compiled \today{} at{} \currenttime}}

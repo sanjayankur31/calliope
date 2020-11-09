@@ -24,13 +24,14 @@ add_entry ()
     echo "Your diary is located in: $diary_dir/."
 
     if [ ! -d "$diary_dir" ]; then
-        mkdir "$diary_dir"
+        mkdir -p "$diary_dir"
     fi
 
     if [ ! -d "$diary_dir/$year" ]; then
-        mkdir "$diary_dir/$year"
-        mkdir "$pdf_dir/$year"
-        mkdir "$diary_dir/$year/images"
+        mkdir -p "$diary_dir/$year"
+        mkdir -p "$pdf_dir/$year"
+        mkdir -p "$diary_dir/$year/$images_files_path"
+        mkdir -p "$diary_dir/$year/$other_files_path"
     fi
 
     if [ -d "$diary_dir/$year" ]; then
