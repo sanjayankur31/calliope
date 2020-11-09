@@ -1,4 +1,5 @@
 *.acn
+*.lol
 *.acr
 *.alg
 *.aux
@@ -26,13 +27,15 @@
 *.pdfsync
 *.ps
 *.snm
-*.synctex.gz
+*.synctex.gz*
 *.toc
 *.vrb
 *.xdy
 *.tdo
 *blx.bib
 *.fls
+*.equ
+*.loe
 
 #
 #dia
@@ -43,7 +46,18 @@
 *latexmain
 
 comment.cut
+.ropeproject
 
+*.pyg
+*.pygtex
+_minted*
+
+*.synctex.gz
+
+*.~*
 
 tags
 tags.*
+
+*.run.xml
+*.bcf
