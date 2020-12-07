@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MY_EDITOR="vimx --servername $(pwgen 8 1)"
+MY_EDITOR="vi"
 MY_VIEWER="xdg-open"
 year=$(date +%G)
 month=$(date +%m)
