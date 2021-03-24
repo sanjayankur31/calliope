@@ -16,6 +16,10 @@ entry_to_view="meh"
 style_file="research_diary.sty"
 other_files_path="other_files/"
 images_files_path="images/"
+search_command="ag"
+search_options="-i -G .*tex -A2 -B2"
+search_term=""
+
 
 
 add_entry ()
@@ -312,6 +316,18 @@ view_latest ()
     $MY_VIEWER "$latest_pdf_entry"
 }
 
+search_diary ()
+{
+    if ! command -v $search_tool &> /dev/null
+    then
+        echo "$search_tool not found."
+        exit -1
+    else
+        echo "Running search command: $search_command $search_options $search_term $diary_dir/*/"
+        $search_command $search_options $search_term $diary_dir/*/
+    fi
+}
+
 usage ()
 {
     cat << EOF
@@ -347,6 +363,11 @@ usage ()
     -V <entry> (yyyy-mm-dd)
         view specific entry using \$MY_VIEWER
 
+    -k <search term>
+        search diary for term using $search_tool
+        Please see the documentation of the search tool you use
+        to see what search terms/regular expressions are supported.
+
 EOF
 
 }
@@ -356,7 +377,7 @@ if [ "$#" -eq 0 ]; then
     exit 0
 fi
 
-while getopts "evLltca:hp:s:E:V:" OPTION
+while getopts "evLltca:hp:s:E:V:k:" OPTION
 do
     case $OPTION in
         t)
@@ -410,6 +431,11 @@ do
         V)
             entry_to_view=$OPTARG
             view_specific
+            exit 0
+            ;;
+        k)
+            search_term=$OPTARG
+            search_diary
             exit 0
             ;;
         ?)
