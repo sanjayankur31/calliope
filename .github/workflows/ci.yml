@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master, development]
+
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+    - name: Install deps
+      run: |
+        sudo apt-get -qq update && sudo apt-get install -y --no-install-recommends texlive-full texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra dvipng texlive-latex-recommended latexmk python-pygments biber
+
+    - name: Create and test example document
+      run: |
+        ./calliope.sh -t && ./calliope.sh -l && ./calliope.sh -a $(date +%Y)
+
