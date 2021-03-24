@@ -21,6 +21,6 @@ jobs:
         run: |
           sudo apt-get -qq update && sudo apt-get install -y --no-install-recommends texlive-full texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra dvipng texlive-latex-recommended latexmk python-pygments biber
 
-      - name: Create and test example document
+      - name: Run test
         run: |
-          ./calliope.sh -t && ./calliope.sh -l && ./calliope.sh -a $(date +%Y)
+          ./test.sh
