@@ -51,6 +51,14 @@ OPTIONS:
 
 -l  Compile latest entry
 
+-C  <commit message>
+    Compile latest entry and commit to repository.
+    An optional commit message may be given using the commit_message
+    variable:
+    commit_message="Test" ./calliope.sh -C
+    If one is not given, the default is used: "Add new entry".
+
+
 -c  Compile today's entry
 
 -a  <year>
@@ -76,8 +84,8 @@ OPTIONS:
     search diary for term using
     Please see the documentation of the search tool you use
     to see what search terms/regular expressions are supported.
-
 ```
+
 ## Set up
 
 The simplest way is to clone this repository, and then change the address of

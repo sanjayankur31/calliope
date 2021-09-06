@@ -20,7 +20,12 @@ search_command="ag"
 search_options="-i -G .*tex -A2 -B2"
 search_term=""
 
-
+# if commit_message is not set or provided on command, use default
+default_commit_message="Add new entry"
+if [ -z ${commit_message+x} ]
+then
+    commit_message="$default_commit_message"
+fi
 
 add_entry ()
 {
@@ -328,6 +333,25 @@ search_diary ()
     fi
 }
 
+commit_changes ()
+{
+    if ! command -v git %> /dev/null
+    then
+        echo "git is not installed."
+        exit -1
+    else
+        echo "Committing changes to repository with commit message $commit_message"
+        git add .
+        if ! git commit -m "$commit_message"
+        then
+            echo "Commit failed. Please check the output and commit manually."
+            exit -1
+        else
+            exit 0
+        fi
+    fi
+}
+
 usage ()
 {
     cat << EOF
@@ -341,6 +365,14 @@ usage ()
     -t  Add new entry for today
 
     -l  Compile latest entry
+
+    -C  <commit message>
+        Compile latest entry and commit to repository.
+        An optional commit message may be given using the commit_message
+        variable:
+        commit_message="Test" ./calliope.sh -C
+        If one is not given, the default is used: "$default_commit_message".
+
 
     -c  Compile today's entry
 
@@ -377,7 +409,7 @@ if [ "$#" -eq 0 ]; then
     exit 0
 fi
 
-while getopts "evLltca:hp:s:E:V:k:" OPTION
+while getopts "evLltca:hp:s:E:V:k:C" OPTION
 do
     case $OPTION in
         t)
@@ -436,6 +468,11 @@ do
         k)
             search_term=$OPTARG
             search_diary
+            exit 0
+            ;;
+        C)
+            compile_latest
+            commit_changes
             exit 0
             ;;
         ?)
