@@ -235,6 +235,7 @@ create_anthology ()
     echo "\lhead{\textsc{\userName}}" >> $FileName
     echo "\rfoot{\textsc{\thepage}}" >> $FileName
     echo "\cfoot{\textit{Last modified: \today}}" >> $FileName
+    echo "\addbibresource{$bibsrc}" >> $FileName
     echo "\graphicspath{{./$year_to_compile/$images_files_path}}" >> $FileName
     echo "\lstset{{inputpath=./$year_to_compile/$other_files_path}}" >> $FileName
 
