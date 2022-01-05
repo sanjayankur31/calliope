@@ -2,10 +2,9 @@
 
  [![CI](https://github.com/sanjayankur31/calliope/actions/workflows/ci.yml/badge.svg)](https://github.com/sanjayankur31/calliope/actions/workflows/ci.yml)
 
-A simple script that makes it easy to use LaTeX for journal keeping - most useful for keeping research journals!
+A simple script that makes it easy to use LaTeX for journal keeping---most useful for keeping research journals!
 
 This script is based on the original project here: https://github.com/mikhailklassen/research-diary-project - do take a look!
-
 ## The name
 
 [In Greek mythology, Calliope is the muse that presides over eloquence and epic poetry.](https://en.wikipedia.org/wiki/Calliope)
@@ -13,7 +12,6 @@ This script is based on the original project here: https://github.com/mikhailkla
 Epic poetry is exactly what our private research journals are ;)
 
 ## Requirements
-
 
 - latexmk
 - pdflatex
@@ -33,9 +31,8 @@ On a Ubuntu system, this installs all of LaTeX and the required tools:
 sudo apt-get install -y texlive-full latexmk python-pygments biber
 ```
 
-I test this out on a Fedora installation, and Travis does Ubuntu. If you test
-it out on other machines, please open a pull request with instructions and the
-sort.
+I test this out on a Fedora installation, and GitHub Actions does Ubuntu.
+If you test it out on other platforms, please open a pull request with instructions.
 
 ## Usage
 
@@ -98,8 +95,50 @@ git remote add origin <address of new private git repository>
 ```
 
 One can also simply [fork](https://github.com/sanjayankur31/calliope#fork-destination-box) this
-repository and then make their fork private. However, one will have to update
-the name of the repository and so on there too.
+repository and then make their fork private.
+However, one will have to update the name of the repository and so on there too.
+
+### Multiple journals
+
+I tend to keep a separate journal for each project that I'm working on.
+The simple way is to copy calliope multiple times, once for each new journal.
+However, this means that when you update (see below), you'll need to update multiple copies of calliope.
+This is quite easy to do now, given that one only has to tweak the `.callioperc` configuration file.
+
+Another way is to download calliope only once, and then use symbolic links (`ln -s` on Linux) in each of your journals.
+For example:
+
+```
+.
+├── journal_1
+│   ├── calliope.sh -> ../calliope/calliope.sh
+│   ├── .callioperc
+│   ├── diary
+│   ├── pdfs
+│   ├── Readme.md
+│   └── templates -> ../calliope/templates
+├── journal_2
+│   ├── calliope.sh -> ../calliope/calliope.sh
+│   ├── .callioperc
+│   ├── diary
+│   ├── pdfs
+│   └── templates -> ../calliope/templates
+├── journal_3
+│   ├── calliope.sh -> ../calliope/calliope.sh
+│   ├── .callioperc
+│   ├── diary
+│   ├── pdfs
+│   └── templates -> ../calliope/templates
+├── calliope
+│   ├── calliope.sh
+│   └── templates
+
+```
+
+Here, the `calliope` folder is a single copy of this repository.
+Each journal then links to it in their folders, and each has a `.callioperc` file with the necessary configuration.
+
+Both ways work well, so you can choose either.
 
 ### Configuration
 
