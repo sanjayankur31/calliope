@@ -11,6 +11,11 @@ year=$(date +%G)
 diary_dir="diary"
 current_folder="$(pwd)"
 
+# update config file for CI
+echo 'author="Test"' > .callioperc
+echo 'ProjectName="Test project"' >> .callioperc
+echo "bibsrc=\"$current_folder/testbib.bib\"" >> .callioperc
+
 echo "Creating new file for today"
 # Delete diary if it exists
 rm -rf "$diary_dir/$year/"
@@ -22,11 +27,10 @@ latest_diary_entry=$(ls $diary_dir/$year/$year*tex | tail -1)
 sed -i "s/section{}/section{Test}/" "$latest_diary_entry" || exit -1
 
 # Add lipsum package, and lipsum text
-sed -i '/^\\usepackage/a \\\usepackage{lipsum}' "templates/research_diary.sty" || exit -1
+echo "\usepackage{lipsum}" >> "templates/research_diary.sty" || exit -1
 sed -i '/^\\section/a \\\lipsum{}' "$latest_diary_entry" || exit -1
 
 # Add a test citation
-sed -i "s|addbibresource{.*}|addbibresource{$current_folder/testbib.bib}|" "templates/research_diary.sty" || exit -1
 sed -i '/^\\printbibliography/i \\\cite{Test2017}' "$latest_diary_entry" || exit -1
 
 
