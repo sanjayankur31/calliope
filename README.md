@@ -101,21 +101,26 @@ One can also simply [fork](https://github.com/sanjayankur31/calliope#fork-destin
 repository and then make their fork private. However, one will have to update
 the name of the repository and so on there too.
 
-### Customising the scripts/templates
+### Configuration
 
-Please remember to update the files in the `templates/` folder and make
-the necessary changes there.
+Please create a `.callioperc` file in the folder and set your variables there.
+The `calliope.sh` script sources this file to obtain the values of these variables:
 
-In `entry.tex`:
+```
+ProjectName="Your project name"
+author="Your name"
+bibsrc="/path/to/your/bib/file"
 
-- update the `userName` variable
-- update the `projectName` variable
+```
 
-In `research_diary.sty`:
+Please do not use the `|` character in these fields.
+It is used as the delimiter in the `sed` command that sets these values in `calliope.sh`.
 
-- update the path to the bibliography file that would be used
-- add/remove any packages as needed.
 
+#### Modifying the sty file
+
+You can add/remove any packages as needed in the `research_diary.sty` file.
+You can also include other definitions and so on there.
 
 ### Keeping up to date
 

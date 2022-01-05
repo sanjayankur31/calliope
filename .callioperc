@@ -1,0 +1,4 @@
+# do not use the | character in these because it is used in the sed command in ./calliope.sh as a delimiter
+ProjectName="Test project"
+author="Ankur Sinha"
+bibsrc="/home/asinha/Documents/02_Code/00_mine/calliope/testbib.bib"

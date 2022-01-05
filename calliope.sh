@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MY_EDITOR="vi"
+MY_EDITOR="vimx --servername $(pwgen 8 1)"
 MY_VIEWER="xdg-open"
 year=$(date +%G)
 month=$(date +%m)
@@ -8,7 +8,6 @@ day=$(date +%d)
 diary_dir="diary"
 pdf_dir="pdfs"
 todays_entry="$year-$month-$day.tex"
-author="Ankur Sinha"
 year_to_compile="meh"
 entry_to_compile="meh"
 entry_to_edit="meh"
@@ -16,9 +15,19 @@ entry_to_view="meh"
 style_file="research_diary.sty"
 other_files_path="other_files/"
 images_files_path="images/"
-search_command="ag"
-search_options="-i -G .*tex -A2 -B2"
+search_command="rg"
+search_options="-i -t tex -C2"
 search_term=""
+author=""
+ProjectName=""
+bibsrc=""
+
+# configuration file to override the above defined variables.
+if [ -f .callioperc ]
+then
+    source .callioperc
+fi
+
 
 # if commit_message is not set or provided on command, use default
 default_commit_message="Add new entry"
@@ -63,6 +72,9 @@ add_entry ()
             sed -i "s/@MONTH/$(date +%B)/g" "$filename"
             sed -i "s/@dday/$day/g" "$filename"
             sed -i "s/@day/$(date +%e)/g" "$filename"
+            sed -i "s|@author|$author|g" "$filename"
+            sed -i "s|@project|$ProjectName|g" "$filename"
+            sed -i "s|@bibsrc|${bibsrc}|g" "$filename"
 
             echo "Finished adding $filename to $year."
             cd ../../ || exit -1
@@ -211,7 +223,7 @@ create_anthology ()
     echo "\documentclass[a4paper,twoside,11pt]{report}" >> $FileName
     echo "\newcommand{\workingDate}{\textsc{$year_to_compile}}" >> $FileName
     echo "\newcommand{\userName}{$author}" >> $FileName
-    echo "\newcommand{\projectName}{General}" >> $FileName
+    echo "\newcommand{\projectName}{$ProjectName}" >> $FileName
     echo "\usepackage{research_diary}" >> $FileName
     echo " " >> $FileName
     echo "\title{Research Diary - $year_to_compile}" >> $FileName
