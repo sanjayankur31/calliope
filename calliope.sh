@@ -246,9 +246,15 @@ decrypt ()
         then
             if [ -f "$1" ]
             then
-                echo "Decrypting $1 with $encryptionId"
-                nongpgfname="$(basename $1 .gpg)"
-                $GPG_COMMAND --decrypt $1 > "$nongpgfname"
+                if [ "${1: -4}" == ".gpg"  ]
+                then
+                    echo "Decrypting $1 with $encryptionId"
+                    nongpgfname="$(basename $1 .gpg)"
+                    $GPG_COMMAND --decrypt $1 > "$nongpgfname"
+
+                else
+                    echo "File is not a GPG encrypted file. Doing nothing."
+                fi
             else
                 echo "File $1 not found"
                 exit 1
