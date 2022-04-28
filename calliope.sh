@@ -268,11 +268,11 @@ decrypt ()
 
 create_anthology ()
 {
-    Name="$year_to_compile""-Research-Diary"
+    Name="$year_to_compile-${ProjectName// /-/}"
     FileName=$Name".tex"
     tmpName=$Name".tmp"
 
-    echo "Research Diary"
+    echo "$ProjectName diary"
     echo "Author: $author"
     echo "Year: $year_to_compile"
 
@@ -285,7 +285,7 @@ create_anthology ()
 
     touch $FileName
     echo "%" > $FileName
-    echo "% Research Diary for $author, $year_to_compile" >> $FileName
+    echo "% $ProjectName Diary for $author, $year_to_compile" >> $FileName
     echo "%" >> $FileName
     echo "\documentclass[a4paper,twoside,11pt]{report}" >> $FileName
     echo "\newcommand{\workingDate}{\textsc{$year_to_compile}}" >> $FileName
@@ -293,12 +293,12 @@ create_anthology ()
     echo "\newcommand{\projectName}{$ProjectName}" >> $FileName
     echo "\usepackage{research_diary}" >> $FileName
     echo " " >> $FileName
-    echo "\title{Research Diary - $year_to_compile}" >> $FileName
+    echo "\title{$ProjectName diary - $year_to_compile}" >> $FileName
     echo "\author{$author}" >> $FileName
     echo " " >> $FileName
 
     echo "\rhead{\textsc{$year_to_compile}}" >> $FileName
-    echo "\chead{\textsc{Research Diary}}" >> $FileName
+    echo "\chead{\textsc{$ProjectName Diary}}" >> $FileName
     echo "\lhead{\textsc{\userName}}" >> $FileName
     echo "\rfoot{\textsc{\thepage}}" >> $FileName
     echo "\cfoot{\textit{Last modified: \today}}" >> $FileName
@@ -310,7 +310,7 @@ create_anthology ()
     echo " " >> $FileName
     echo "\begin{document}" >> $FileName
     echo "\begin{center} \begin{LARGE}" >> $FileName
-    echo "\textbf{Research Diary} \\\\[3mm]" >> $FileName
+    echo "\textbf{$ProjectName Diary} \\\\[3mm]" >> $FileName
     echo "\textbf{$year_to_compile} \\\\[2cm]" >> $FileName
     echo "\end{LARGE} \begin{large}" >> $FileName
     echo "$author \end{large} \\\\" >> $FileName
@@ -417,7 +417,7 @@ view_latest ()
 
 view_anthology ()
 {
-    Name="$year_to_compile-$ProjectName"
+    Name="$year_to_compile-${ProjectName// /-/}"
     pushd $pdf_dir/
         FileName="$Name.pdf.gpg"
         decrypt "$FileName"
