@@ -268,7 +268,7 @@ decrypt ()
 
 create_anthology ()
 {
-    Name="$year_to_compile-${ProjectName// /-}"
+    Name="$year_to_compile-${ProjectName// /-}-Diary"
     FileName=$Name".tex"
     tmpName=$Name".tmp"
 
@@ -417,7 +417,7 @@ view_latest ()
 
 view_anthology ()
 {
-    Name="$year_to_compile-${ProjectName// /-}"
+    Name="$year_to_compile-${ProjectName// /-}-Diary"
     pushd $pdf_dir/
         FileName="$Name.pdf.gpg"
         decrypt "$FileName"
