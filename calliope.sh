@@ -530,8 +530,7 @@ usage ()
         encrypt a file
 
     -x
-        clean folder: remove temporary files, and any unencrypted files
-        if encryption is enabled
+        clean folder: remove any unencrypted files if encryption is enabled
 
 EOF
 
@@ -622,7 +621,6 @@ do
             exit 0
             ;;
         x)
-            clean
             remove_unencrpyted
             exit 0
             ;;
