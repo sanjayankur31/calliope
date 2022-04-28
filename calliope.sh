@@ -21,6 +21,7 @@ search_term=""
 author=""
 ProjectName=""
 bibsrc=""
+encryptionId=""
 
 # configuration file to override the above defined variables.
 if [ -f .callioperc ]
@@ -197,6 +198,32 @@ compile_specific ()
     echo "Generated pdf moved to pdfs directory."
     cd ../../ || exit -1
 
+    remove_unencrpyted
+}
+
+# both of these need to be run in the folder itself
+# so remember to pushd/popd as required
+encrypt ()
+{
+    if [ -z ${encryptionId+x} ]
+    then
+        echo "Encryption is not enabled"
+    else
+        echo "Encrypting $1 with $encryptionId"
+        gpg2 --encrypt --sign -r "$encryptionId" "$1" && rm "$1" -f
+    fi
+}
+
+decrypt ()
+{
+    if [ -z ${encryptionId+x} ]
+    then
+        echo "Encryption is not enabled"
+    else
+        echo "Decrypting $1 with $encryptionId"
+        nongpgfname="$(basename $1 .gpg)"
+        gpg2 --decrypt "$1" > "$nongpgfname"
+    fi
 }
 
 create_anthology ()
@@ -325,13 +352,31 @@ view_specific ()
       echo "$pdf_dir/$year/ does not exist. Exiting."
       exit -1
     fi
-    $MY_VIEWER "$pdf_dir/$year/$entry_to_view.pdf"
+    pushd "$pdf_dir/$year"
+        decrypt "$entry_to_view.pdf.gpg"
+        $MY_VIEWER "$entry_to_view.pdf"
+    popd
 }
 
 view_latest ()
 {
-    latest_pdf_entry=$(ls $pdf_dir/$year/$year*pdf | tail -1)
-    $MY_VIEWER "$latest_pdf_entry"
+    pushd $pdf_dir/$year/
+        latest_pdf_entry=$(ls $year*pdf* | tail -1)
+        decrypt "$latest_pdf_entry"
+        outputfile="$(basename $latest_pdf_entry .gpg)"
+        $MY_VIEWER "$outputfile"
+    popd
+}
+
+view_anthology ()
+{
+    Name="$year_to_compile-$ProjectName"
+    pushd $pdf_dir/
+        FileName="$Name.pdf.gpg"
+        decrypt "$FileName"
+        outputfile="$(basename $FileName .gpg)"
+        $MY_VIEWER "$outputfile"
+    popd
 }
 
 search_diary ()
@@ -343,6 +388,17 @@ search_diary ()
     else
         echo "Running search command: $search_command $search_options -- $search_term $diary_dir/*/"
         $search_command $search_options -- "$search_term" $diary_dir/*/
+    fi
+}
+
+remove_unencrpyted ()
+{
+    # if encryption is enabled, delete all unencrypted pdf files before committing
+    if [ -z ${encryptionId+x} ]
+    then
+        echo "Encryption is not enabled"
+    else
+        find . -name "*.pdf" -delete
     fi
 }
 
@@ -392,6 +448,9 @@ usage ()
     -a  <year>
         Year to generate anthology of
 
+    -A  <year>
+        Year to view anthology of
+
     -p  <year>
         Compile all entries in this year
 
@@ -413,6 +472,11 @@ usage ()
         Please see the documentation of the search tool you use
         to see what search terms/regular expressions are supported.
 
+        Note: only works when encryption is not enabled.
+
+    -d <file to decrypt>
+        decrypt a file
+
 EOF
 
 }
@@ -422,7 +486,7 @@ if [ "$#" -eq 0 ]; then
     exit 0
 fi
 
-while getopts "evLltca:hp:s:E:V:k:C" OPTION
+while getopts "evLltca:A:hp:s:E:V:k:Cd:" OPTION
 do
     case $OPTION in
         t)
@@ -452,6 +516,11 @@ do
         a)
             year_to_compile=$OPTARG
             create_anthology
+            exit 0
+            ;;
+        A)
+            year_to_compile=$OPTARG
+            view_anthology
             exit 0
             ;;
         h)
@@ -486,6 +555,10 @@ do
         C)
             compile_latest
             commit_changes
+            exit 0
+            ;;
+        d)
+            decrypt "$OPTARG"
             exit 0
             ;;
         ?)
