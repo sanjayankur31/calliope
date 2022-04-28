@@ -210,10 +210,17 @@ encrypt ()
     else
         if command -v $GPG_COMMAND %> /dev/null
         then
-            echo "Encrypting $1 with $encryptionId"
-            $GPG_COMMAND --encrypt --sign -r "$encryptionId" "$1" && rm "$1" -f
+            if [ -f "$1" ]
+            then
+                echo "Encrypting $1 with $encryptionId"
+                $GPG_COMMAND --encrypt --sign -r "$encryptionId" "$1" && rm "$1" -f
+            else
+                echo "File $1 not found"
+                exit 1
+            fi
         else
             echo "$GPG_COMMAND is not installed. Cannot encrypt."
+            exit 1
         fi
     fi
 }
@@ -237,11 +244,18 @@ decrypt ()
     else
         if command -v $GPG_COMMAND %> /dev/null
         then
-            echo "Decrypting $1 with $encryptionId"
-            nongpgfname="$(basename $1 .gpg)"
-            $GPG_COMMAND --decrypt $1 > "$nongpgfname"
+            if [ -f "$1" ]
+            then
+                echo "Decrypting $1 with $encryptionId"
+                nongpgfname="$(basename $1 .gpg)"
+                $GPG_COMMAND --decrypt $1 > "$nongpgfname"
+            else
+                echo "File $1 not found"
+                exit 1
+            fi
         else
             echo "$GPG_COMMAND is not installed. Cannot decrypt."
+            exit 1
         fi
     fi
 }
