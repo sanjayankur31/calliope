@@ -225,7 +225,7 @@ encrypt_all ()
         echo "Encryption is not enabled"
     else
         echo "Encrypting all files with $encryptionId"
-        find pdfs/ diary/ -execdir $GPG_COMMAND --encrypt --sign -r "$encryptionId" "{}" \;
+        find pdfs/ diary/ -type f -and -not -type l -execdir $GPG_COMMAND --encrypt --sign -r "$encryptionId" "{}" \;
     fi
 }
 
@@ -419,7 +419,7 @@ remove_unencrpyted ()
         echo "Encryption is not enabled"
     else
         echo "Deleting all unencrpyted files"
-        find pdfs/ diary/ -not -name "*.gpg" -delete
+        find pdfs/ diary/ -not -name "*.gpg" -and -type f -and -not -type l -delete
     fi
 }
 
