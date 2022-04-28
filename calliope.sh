@@ -365,8 +365,12 @@ create_anthology ()
 
 edit_latest ()
 {
-    latest_diary_entry=$(ls $diary_dir/$year/$year*tex | tail -1)
-    $MY_EDITOR "$latest_diary_entry"
+    pushd $diary_dir/$year/
+        latest_diary_entry=$(ls $year*tex* | tail -1)
+        decrypt "$latest_diary_entry"
+        outputfile="$(basename $latest_diary_entry .gpg)"
+        $MY_EDITOR "$outputfile"
+    popd
 }
 
 edit_specific ()
@@ -376,7 +380,10 @@ edit_specific ()
       echo "$diary_dir/$year/ does not exist. Exiting."
       exit -1
     fi
-    $MY_EDITOR "$diary_dir/$year/$entry_to_edit.tex"
+    pushd "$diary_dir/$year/"
+        decrypt "$entry_to_edit.tex.gpg"
+        $MY_EDITOR "$entry_to_edit.tex"
+    popd
 }
 
 view_specific ()
