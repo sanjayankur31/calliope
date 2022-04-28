@@ -22,6 +22,7 @@ author=""
 ProjectName=""
 bibsrc=""
 encryptionId=""
+GPG_COMMAND="gpg2"
 
 # configuration file to override the above defined variables.
 if [ -f .callioperc ]
@@ -197,8 +198,6 @@ compile_specific ()
     mv -- *.pdf "../../$pdf_dir/$year/"
     echo "Generated pdf moved to pdfs directory."
     cd ../../ || exit -1
-
-    remove_unencrpyted
 }
 
 # both of these need to be run in the folder itself
@@ -209,8 +208,24 @@ encrypt ()
     then
         echo "Encryption is not enabled"
     else
-        echo "Encrypting $1 with $encryptionId"
-        gpg2 --encrypt --sign -r "$encryptionId" "$1" && rm "$1" -f
+        if command -v $GPG_COMMAND %> /dev/null
+        then
+            echo "Encrypting $1 with $encryptionId"
+            $GPG_COMMAND --encrypt --sign -r "$encryptionId" "$1" && rm "$1" -f
+        else
+            echo "$GPG_COMMAND is not installed. Cannot encrypt."
+        fi
+    fi
+}
+
+encrypt_all ()
+{
+    if [ -z ${encryptionId+x} ]
+    then
+        echo "Encryption is not enabled"
+    else
+        echo "Encrypting all files with $encryptionId"
+        find pdfs/ diary/ -execdir $GPG_COMMAND --encrypt --sign -r "$encryptionId" "{}" \;
     fi
 }
 
@@ -220,9 +235,14 @@ decrypt ()
     then
         echo "Encryption is not enabled"
     else
-        echo "Decrypting $1 with $encryptionId"
-        nongpgfname="$(basename $1 .gpg)"
-        gpg2 --decrypt "$1" > "$nongpgfname"
+        if command -v $GPG_COMMAND %> /dev/null
+        then
+            echo "Decrypting $1 with $encryptionId"
+            nongpgfname="$(basename $1 .gpg)"
+            $GPG_COMMAND --decrypt $1 > "$nongpgfname"
+        else
+            echo "$GPG_COMMAND is not installed. Cannot decrypt."
+        fi
     fi
 }
 
@@ -398,7 +418,8 @@ remove_unencrpyted ()
     then
         echo "Encryption is not enabled"
     else
-        find . -name "*.pdf" -delete
+        echo "Deleting all unencrpyted files"
+        find pdfs/ diary/ -not -name "*.gpg" -delete
     fi
 }
 
@@ -409,6 +430,7 @@ commit_changes ()
         echo "git is not installed."
         exit -1
     else
+        encrypt_all && remove_unencrpyted
         echo "Committing changes to repository with commit message $commit_message"
         git add .
         if ! git commit -m "$commit_message"
@@ -472,10 +494,13 @@ usage ()
         Please see the documentation of the search tool you use
         to see what search terms/regular expressions are supported.
 
-        Note: only works when encryption is not enabled.
+        Note: only works when encryption is *not* enabled.
 
-    -d <file to decrypt>
+    -G <file to decrypt>
         decrypt a file
+
+    -g <file to encrypt>
+        encrypt a file
 
 EOF
 
@@ -486,7 +511,7 @@ if [ "$#" -eq 0 ]; then
     exit 0
 fi
 
-while getopts "evLltca:A:hp:s:E:V:k:Cd:" OPTION
+while getopts "evLltca:A:hp:s:E:V:k:CG:g:" OPTION
 do
     case $OPTION in
         t)
@@ -557,8 +582,12 @@ do
             commit_changes
             exit 0
             ;;
-        d)
+        G)
             decrypt "$OPTARG"
+            exit 0
+            ;;
+        g)
+            encrypt "$OPTARG"
             exit 0
             ;;
         ?)
