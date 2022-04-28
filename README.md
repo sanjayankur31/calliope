@@ -61,6 +61,9 @@ OPTIONS:
 -a  <year>
     Year to generate anthology of
 
+-A  <year>
+    Year to view anthology of
+
 -p  <year>
     Compile all entries in this year
 
@@ -81,6 +84,18 @@ OPTIONS:
     search diary for term using
     Please see the documentation of the search tool you use
     to see what search terms/regular expressions are supported.
+
+    Note: only works when encryption is *not* enabled.
+
+-G <file to decrypt>
+    decrypt a file
+
+-g <file to encrypt>
+    encrypt a file
+
+-x
+    clean folder: remove any unencrypted files if encryption is enabled
+
 ```
 
 ## Set up

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+VERSION=1.2.0
 MY_EDITOR="vimx --servername $(pwgen 8 1)"
 MY_VIEWER="xdg-open"
 year=$(date +%G)
@@ -476,6 +477,7 @@ usage ()
     usage: $0 options
 
     Master script file that provides functions to maintain a journal using LaTeX.
+    Version: $VERSION
 
     OPTIONS:
     -h  Show this message and quit
