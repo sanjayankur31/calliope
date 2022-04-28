@@ -529,6 +529,10 @@ usage ()
     -g <file to encrypt>
         encrypt a file
 
+    -x
+        clean folder: remove temporary files, and any unencrypted files
+        if encryption is enabled
+
 EOF
 
 }
@@ -538,7 +542,7 @@ if [ "$#" -eq 0 ]; then
     exit 0
 fi
 
-while getopts "evLltca:A:hp:s:E:V:k:CG:g:" OPTION
+while getopts "evLltca:A:hp:s:E:V:k:CG:g:x" OPTION
 do
     case $OPTION in
         t)
@@ -615,6 +619,11 @@ do
             ;;
         g)
             encrypt "$OPTARG"
+            exit 0
+            ;;
+        x)
+            clean
+            remove_unencrpyted
             exit 0
             ;;
         ?)
