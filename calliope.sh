@@ -14,6 +14,7 @@ entry_to_compile="meh"
 entry_to_edit="meh"
 entry_to_view="meh"
 style_file="research_diary.sty"
+package_name=$(basename $style_file ".sty")
 other_files_path="other_files/"
 images_files_path="images/"
 search_command="rg"
@@ -287,7 +288,7 @@ create_anthology ()
     echo "\newcommand{\workingDate}{\textsc{$year_to_compile}}" >> $FileName
     echo "\newcommand{\userName}{$author}" >> $FileName
     echo "\newcommand{\projectName}{$ProjectName}" >> $FileName
-    echo "\usepackage{research_diary}" >> $FileName
+    echo "\usepackage{$package_name}" >> $FileName
     echo " " >> $FileName
     echo "\title{$ProjectName diary - $year_to_compile}" >> $FileName
     echo "\author{$author}" >> $FileName
