@@ -205,7 +205,7 @@ compile_specific ()
 # so remember to pushd/popd as required
 encrypt ()
 {
-    if [ -z ${encryptionId+x} ]
+    if [ -z ${encryptionId} ]
     then
         echo "Encryption is not enabled"
     else
@@ -228,18 +228,18 @@ encrypt ()
 
 encrypt_all ()
 {
-    if [ -z ${encryptionId+x} ]
+    if [ -z ${encryptionId} ]
     then
         echo "Encryption is not enabled"
     else
         echo "Encrypting all files with $encryptionId"
-        find pdfs/ diary/ -type f -and -not -type l -execdir $GPG_COMMAND --encrypt --sign -r "$encryptionId" "{}" \;
+        find pdfs/ diary/ -type f -and -not -type l -and -not -name "*.gpg" -execdir $GPG_COMMAND --encrypt --sign -r "$encryptionId" "{}" \;
     fi
 }
 
 decrypt ()
 {
-    if [ -z ${encryptionId+x} ]
+    if [ -z ${encryptionId} ]
     then
         echo "Encryption is not enabled"
     else
@@ -442,7 +442,7 @@ search_diary ()
 remove_unencrpyted ()
 {
     # if encryption is enabled, delete all unencrypted pdf files before committing
-    if [ -z ${encryptionId+x} ]
+    if [ -z ${encryptionId} ]
     then
         echo "Encryption is not enabled"
     else
