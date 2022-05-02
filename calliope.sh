@@ -222,11 +222,12 @@ encrypt ()
 
 encrypt_all ()
 {
+    # Any files that do not end in ".gpg" are considered unencrypted, just encrypt those.
     if [ -z ${encryptionId} ]
     then
         echo "Encryption is not enabled"
     else
-        echo "Encrypting all files with $encryptionId"
+        echo "Encrypting all unencrypted files with $encryptionId"
         find pdfs/ diary/ -type f -and -not -type l -and -not -name "*.gpg" -execdir $GPG_COMMAND --encrypt --sign -r "$encryptionId" "{}" \;
     fi
 }
