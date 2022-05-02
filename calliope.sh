@@ -24,6 +24,7 @@ ProjectName=""
 bibsrc=""
 encryptionId=""
 GPG_COMMAND="gpg2"
+default_commit_message="Add new entry"
 
 # configuration file to override the above defined variables.
 if [ -f .callioperc ]
@@ -31,13 +32,6 @@ then
     source .callioperc
 fi
 
-
-# if commit_message is not set or provided on command, use default
-default_commit_message="Add new entry"
-if [ -z ${commit_message+x} ]
-then
-    commit_message="$default_commit_message"
-fi
 
 add_entry ()
 {
@@ -459,9 +453,9 @@ commit_changes ()
         exit -1
     else
         encrypt_all && remove_unencrpyted
-        echo "Committing changes to repository with commit message $commit_message"
+        echo "Committing changes to repository with commit message ${commit_message:-default_commit_message}"
         git add .
-        if ! git commit -m "$commit_message"
+        if ! git commit -m "${commit_message:-default_commit_message}"
         then
             echo "Commit failed. Please check the output and commit manually."
             exit -1
