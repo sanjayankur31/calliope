@@ -209,7 +209,7 @@ encrypt ()
             if [ -f "$1" ]
             then
                 echo "Encrypting $1 with $encryptionId"
-                $GPG_COMMAND --encrypt --sign -r "$encryptionId" "$1" && rm "$1" -f
+                $GPG_COMMAND --encrypt --sign -r "$encryptionId" "$1" && rm "$1" -f || exit -1
             else
                 echo "File $1 not found"
                 exit 1
@@ -234,10 +234,7 @@ encrypt_all ()
             directory="$(dirname $f)"
             file="$(basename $f)"
             pushd $directory
-                if ! $GPG_COMMAND --encrypt --sign -r "$encryptionId" "$file"
-                then
-                    exit -1
-                fi
+                encrypt "$file" || exit -1
             popd
         done
     fi
@@ -445,14 +442,14 @@ search_diary ()
     fi
 }
 
-remove_unencrpyted ()
+remove_unencrypted ()
 {
     # if encryption is enabled, delete all unencrypted pdf files before committing
     if [ -z ${encryptionId} ]
     then
         echo "Encryption is not enabled"
     else
-        echo "Deleting all unencrpyted files"
+        echo "Deleting all unencrypted files"
         find pdfs/ diary/ -not -name "*.gpg" -and -type f -and -not -type l -delete
     fi
 }
@@ -464,8 +461,8 @@ commit_changes ()
         echo "git is not installed."
         exit -1
     else
-        encrypt_all && remove_unencrpyted
-        echo "Committing changes to repository with commit message ${commit_message:-$default_commit_message}"
+        encrypt_all && remove_unencrypted || exit -1
+        echo "Committing changes to repository with commit message \"${commit_message:-$default_commit_message}\""
         git add .
         if ! git commit -m "${commit_message:-$default_commit_message}"
         then
@@ -629,7 +626,7 @@ do
             exit 0
             ;;
         x)
-            remove_unencrpyted
+            remove_unencrypted
             exit 0
             ;;
         ?)
