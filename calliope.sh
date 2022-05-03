@@ -229,7 +229,17 @@ encrypt_all ()
         echo "Encryption is not enabled"
     else
         echo "Encrypting all unencrypted files with $encryptionId"
-        find pdfs/ diary/ -type f -and -not -type l -and -not -name "*.gpg" -execdir $GPG_COMMAND --encrypt --sign -r "$encryptionId" "{}" \;
+        find pdfs/ diary/ -type f -and -not -type l -and -not -name "*.gpg" | while read f
+        do
+            directory="$(dirname $f)"
+            file="$(basename $f)"
+            pushd $directory
+                if ! $GPG_COMMAND --encrypt --sign -r "$encryptionId" "$file"
+                then
+                    exit -1
+                fi
+            popd
+        done
     fi
 }
 
