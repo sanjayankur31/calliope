@@ -209,7 +209,7 @@ encrypt ()
             if [ -f "$1" ]
             then
                 echo "Encrypting $1 with $encryptionId"
-                $GPG_COMMAND --encrypt --sign -r "$encryptionId" "$1" && rm "$1" -f || exit -1
+                $GPG_COMMAND --batch --encrypt --sign -r "$encryptionId" "$1" && rm "$1" -f || exit -1
             else
                 echo "File $1 not found"
                 exit 1
@@ -254,7 +254,7 @@ decrypt ()
                 then
                     echo "Decrypting $1 with $encryptionId"
                     nongpgfname="$(basename $1 .gpg)"
-                    $GPG_COMMAND --decrypt $1 > "$nongpgfname"
+                    $GPG_COMMAND --batch --decrypt $1 > "$nongpgfname"
 
                 else
                     echo "File is not a GPG encrypted file. Doing nothing."
@@ -496,6 +496,18 @@ usage ()
         commit_message="Test" ./calliope.sh -C
         If one is not given, the default is used: "$default_commit_message".
 
+        Note that encryption, if enabled, is only done before committing.
+        So, please remember to commit early and commit often.
+
+    -m  <commit message>
+        Commit to repository (but do not compile).
+        An optional commit message may be given using the commit_message
+        variable:
+        commit_message="Test" ./calliope.sh -C
+        If one is not given, the default is used: "$default_commit_message".
+
+        Note that encryption, if enabled, is only done before committing.
+        So, please remember to commit early and commit often.
 
     -c  Compile today's entry
 
@@ -546,7 +558,7 @@ if [ "$#" -eq 0 ]; then
     exit 0
 fi
 
-while getopts "evLltca:A:hp:s:E:V:k:CG:g:x" OPTION
+while getopts "evLltca:A:hp:s:E:V:k:CG:g:xm" OPTION
 do
     case $OPTION in
         t)
@@ -614,6 +626,10 @@ do
             ;;
         C)
             compile_latest
+            commit_changes
+            exit 0
+            ;;
+        m)
             commit_changes
             exit 0
             ;;
