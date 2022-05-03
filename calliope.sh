@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=1.2.2
+VERSION=1.2.3
 MY_EDITOR="vimx --servername $(pwgen 8 1)"
 MY_VIEWER="xdg-open"
 year=$(date +%G)
@@ -209,7 +209,7 @@ encrypt ()
             if [ -f "$1" ]
             then
                 echo "Encrypting $1 with $encryptionId"
-                $GPG_COMMAND --batch --encrypt --sign -r "$encryptionId" "$1" && rm "$1" -f || exit -1
+                $GPG_COMMAND --batch --yes --encrypt --sign -r "$encryptionId" "$1" && rm "$1" -f || exit -1
             else
                 echo "File $1 not found"
                 exit 1
@@ -254,7 +254,7 @@ decrypt ()
                 then
                     echo "Decrypting $1 with $encryptionId"
                     nongpgfname="$(basename $1 .gpg)"
-                    $GPG_COMMAND --batch --decrypt $1 > "$nongpgfname"
+                    $GPG_COMMAND --batch --yes --decrypt $1 > "$nongpgfname"
 
                 else
                     echo "File is not a GPG encrypted file. Doing nothing."
