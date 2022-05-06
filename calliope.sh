@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=1.2.3
+VERSION=1.2.4
 MY_EDITOR="vimx --servername $(pwgen 8 1)"
 MY_VIEWER="xdg-open"
 year=$(date +%G)
