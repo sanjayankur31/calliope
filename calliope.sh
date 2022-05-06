@@ -254,8 +254,13 @@ decrypt ()
                 then
                     echo "Decrypting $1 with $encryptionId"
                     nongpgfname="$(basename $1 .gpg)"
-                    $GPG_COMMAND --batch --yes --decrypt $1 > "$nongpgfname"
-
+                    if [ "$1" -nt "$nongpgfname" ]
+                    then
+                        $GPG_COMMAND --batch --yes --decrypt $1 > "$nongpgfname"
+                    else
+                        echo "WARNING: Decrypted file is newer than encrypted copy."
+                        echo "WARNING: Not overwriting. Please check the files, and re-encrypt if required."
+                    fi
                 else
                     echo "File is not a GPG encrypted file. Doing nothing."
                 fi
