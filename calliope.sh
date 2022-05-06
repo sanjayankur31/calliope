@@ -208,8 +208,21 @@ encrypt ()
         then
             if [ -f "$1" ]
             then
-                echo "Encrypting $1 with $encryptionId"
-                $GPG_COMMAND --batch --yes --encrypt --sign -r "$encryptionId" "$1" && rm "$1" -f || exit -1
+                if [ "${1: -4}" == ".gpg"  ]
+                then
+                    echo "File $1 is already encrypted. Not re-encrypting."
+                    exit 1
+                else
+                    echo "Encrypting $1 with $encryptionId"
+                    if [ "$1" -ot "${1}.gpg" ]
+                    then
+                        echo "WARNING: Encrypted file newer than text file found."
+                        echo "WARNING: Not encrypting, since this may overwrite a newer encrypted file."
+                        exit 1
+                    else
+                        $GPG_COMMAND --batch --yes --encrypt --sign -r "$encryptionId" "$1" && rm "$1" -f || exit -1
+                    fi
+                fi
             else
                 echo "File $1 not found"
                 exit 1
