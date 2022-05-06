@@ -270,6 +270,45 @@ decrypt ()
     fi
 }
 
+# remember to pushd/popd into the required directory
+decrypt_all_sources ()
+{
+    # Any files that end in ".gpg" are considered encrypted, decrypt those.
+    if [ -z ${encryptionId} ]
+    then
+        echo "Encryption is not enabled"
+    else
+        echo "Decrypting all encrypted files"
+        find . -type f -and -not -type l -and -name "*.gpg" | while read f
+        do
+            directory="$(dirname $f)"
+            file="$(basename $f)"
+            pushd $directory
+                decrypt "$file" || exit -1
+            popd
+        done
+    fi
+}
+
+decrypt_all ()
+{
+    # Any files that end in ".gpg" are considered encrypted, decrypt those.
+    if [ -z ${encryptionId} ]
+    then
+        echo "Encryption is not enabled"
+    else
+        echo "Decrypting all encrypted files"
+        find pdfs/ diary/ -type f -and -not -type l -and -name "*.gpg" | while read f
+        do
+            directory="$(dirname $f)"
+            file="$(basename $f)"
+            pushd $directory
+                decrypt "$file" || exit -1
+            popd
+        done
+    fi
+}
+
 create_anthology ()
 {
     Name="$year_to_compile-${ProjectName// /-}-Diary"
@@ -284,6 +323,14 @@ create_anthology ()
         echo "ERROR: No directory for $year_to_compile exists"
         exit;
     fi
+
+    if [ -z ${encryptionId} ]
+    then
+        echo ""
+    else
+        pushd "$diary_dir/$year_to_compile" && decrypt_all_sources && popd
+    fi
+
 
     cd "$diary_dir" || exit -1
 
