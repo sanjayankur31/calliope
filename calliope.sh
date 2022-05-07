@@ -436,6 +436,13 @@ create_anthology ()
 
     echo "$year_to_compile master document created in $pdf_dir."
     cd ../ || exit -1
+
+    if [ -z ${encryptionId} ]
+    then
+        echo ""
+    else
+        pushd "$diary_dir/$year_to_compile" && git clean -dfx . && popd
+    fi
 }
 
 edit_latest ()
