@@ -64,7 +64,7 @@ add_entry ()
                 ln -s ../../templates/$style_file .
             fi
 
-            cp ../../templates/entry.tex "$filename"
+            cp ../../templates/entry.tex "$filename" && git add --intent-to-add "$filename"
 
             sed -i "s/@year/$year/g" "$filename"
             sed -i "s/@MONTH/$(date +%B)/g" "$filename"
