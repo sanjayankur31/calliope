@@ -31,6 +31,15 @@ default_commit_message="Add new entry"
 if [ -f .callioperc ]
 then
     source .callioperc
+else
+    echo "No .callioperc file found. Creating file with empty fields."
+    echo "Please fill in the necessary information."
+    echo "It will be used in subsequent runs."
+    echo "ProjectName=\"\"" > .callioperc
+    echo "author=\"\"" >> .callioperc
+    echo "bibsrc=\"\"" >> .callioperc
+    echo "encryptionId=\"\"" >> .callioperc
+    exit 0
 fi
 
 
