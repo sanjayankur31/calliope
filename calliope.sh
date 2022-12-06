@@ -165,17 +165,22 @@ compile_all ()
     fi
 
     cd "$diary_dir/$year_to_compile/" || exit -1
-    echo "Compiling all in $year_to_compile."
-    for i in "$year_to_compile"-*.tex ; do
-      if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$i"; then
-          echo "Compilation failed at $i. Exiting."
-          cd ../../ || exit -1
-          exit -1
-      fi
-      mv -- *.pdf "../../$pdf_dir/$year_to_compile/"
-      echo "Generated pdf for $i moved to pdfs directory."
-      clean
-    done
+    echo "Compiling all in $year_to_compile in parallel."
+    find . -name '*.tex' | parallel -I% --max-args 1 latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex %
+    mv -- *.pdf "../../$pdf_dir/$year_to_compile/"
+    clean
+
+#    echo "Compiling all in $year_to_compile."
+#    for i in "$year_to_compile"-*.tex ; do
+#      if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$i"; then
+#          echo "Compilation failed at $i. Exiting."
+#          cd ../../ || exit -1
+#          exit -1
+#      fi
+#      mv -- *.pdf "../../$pdf_dir/$year_to_compile/"
+#      echo "Generated pdf for $i moved to pdfs directory."
+#      clean
+#    done
 
     echo "Generated pdf moved to pdfs directory."
     cd ../../ || exit -1
