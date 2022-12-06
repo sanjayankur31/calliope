@@ -416,6 +416,7 @@ create_anthology ()
     sed -i 's/\\printbibliography.*$//g' $tmpName
     sed -i 's/\\end{document}//g' $tmpName
     sed -i 's|\\includegraphics\(.*\)'"$images_files_path"'\(.*\)|\\includegraphics\1\2|g' $tmpName
+    sed -i 's|\\includesvg\(.*\)'"$images_files_path"'\(.*\)|\\includesvg\1\2|g' $tmpName
     sed -i 's|\\lstinputlisting\(.*\)'"$other_files_path"'\(.*\)|\\lstinputlisting\1\2|g' $tmpName
     sed -i 's|\\inputminted\(.*\)\('"$other_files_path"'\)\(.*\)|\\inputminted\1'"./$year_to_compile/"'\2\3|g' $tmpName
     # with options: options can contain a {, so need to handle them first
