@@ -213,7 +213,7 @@ encrypt ()
     then
         echo "Encryption is not enabled"
     else
-        if command -v $GPG_COMMAND %> /dev/null
+        if command -v $GPG_COMMAND &> /dev/null
         then
             if [ -f "$1" ]
             then
@@ -268,7 +268,7 @@ decrypt ()
     then
         echo "Encryption is not enabled"
     else
-        if command -v $GPG_COMMAND %> /dev/null
+        if command -v $GPG_COMMAND &> /dev/null
         then
             if [ -f "$1" ]
             then
@@ -537,7 +537,7 @@ remove_unencrypted ()
 
 commit_changes ()
 {
-    if ! command -v git %> /dev/null
+    if ! command -v git &> /dev/null
     then
         echo "git is not installed."
         exit -1
