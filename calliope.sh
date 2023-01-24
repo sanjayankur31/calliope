@@ -168,9 +168,18 @@ compile_all ()
     cd "$diary_dir/$year_to_compile/" || exit -1
     if $useParallel; then
         echo "Compiling all in $year_to_compile in parallel."
-        find . -name '*.tex' | parallel -I% --max-args 1 latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex %
+        find . -name '*.tex' | parallel -I% --max-args 1 --joblog parallel.log --bar latexmk -pdf -silent -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex %
         mv -- *.pdf "../../$pdf_dir/$year_to_compile/"
+#        echo "Failed to compile for:"
+        awk 'NR>1 {
+        if ((! $7 == 0))
+            {
+                print $7, $19
+            }
+        }' parallel.log > ../../failed-runs.log
         clean
+        echo "Please check failed-runs, if all runs where sucessful."
+        cd ../../ || exit -1
     else
         echo "Compiling all in $year_to_compile."
         for i in "$year_to_compile"-*.tex ; do
