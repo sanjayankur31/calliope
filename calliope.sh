@@ -26,6 +26,7 @@ bibsrc=""
 encryptionId=""
 GPG_COMMAND="gpg2"
 default_commit_message="Add new entry"
+useParallel=true
 
 # configuration file to override the above defined variables.
 if [ -f .callioperc ]
@@ -156,8 +157,8 @@ compile_latest ()
 compile_all ()
 {
     if [ ! -d "$diary_dir/$year_to_compile/" ]; then
-      echo "$diary_dir/$year_to_compile/ does not exist. Exiting."
-      exit -1
+        echo "$diary_dir/$year_to_compile/ does not exist. Exiting."
+        exit -1
     fi
 
     if [ ! -d "../../$pdf_dir/$year_to_compile" ]; then
@@ -165,20 +166,42 @@ compile_all ()
     fi
 
     cd "$diary_dir/$year_to_compile/" || exit -1
-    echo "Compiling all in $year_to_compile."
-    for i in "$year_to_compile"-*.tex ; do
-      if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$i"; then
-          echo "Compilation failed at $i. Exiting."
-          cd ../../ || exit -1
-          exit -1
-      fi
-      mv -- *.pdf "../../$pdf_dir/$year_to_compile/"
-      echo "Generated pdf for $i moved to pdfs directory."
-      clean
-    done
+    if $useParallel; then
+        echo "Compiling all in $year_to_compile in parallel."
+        find . -name '*.tex' | parallel -I% --max-args 1 --joblog parallel.log --bar latexmk -pdf -silent -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex %
+        mv -- *.pdf "../../$pdf_dir/$year_to_compile/"
+        awk 'NR>1 {
+        if ((! $7 == 0))
+            {
+                print $7, $19
+            }
+        }' parallel.log > ../../failed-runs.log
+        clean
+        cd ../../
+        if [ -s failed-runs.log ]; then
+            echo "Check for failed runs in failed-runs.log!"
+            echo "Following runs failes:"
+            cat failed-runs.log
+        else
+            rm failed-runs.log
+        fi
+        exit -1
+    else
+        echo "Compiling all in $year_to_compile."
+        for i in "$year_to_compile"-*.tex ; do
+            if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$i"; then
+                echo "Compilation failed at $i. Exiting."
+                cd ../../ || exit -1
+                exit -1
+            fi
+            mv -- *.pdf "../../$pdf_dir/$year_to_compile/"
+            echo "Generated pdf for $i moved to pdfs directory."
+            clean
+        done
 
-    echo "Generated pdf moved to pdfs directory."
-    cd ../../ || exit -1
+        echo "Generated pdf moved to pdfs directory."
+        cd ../../ || exit -1
+    fi
 }
 
 compile_specific ()
@@ -416,6 +439,7 @@ create_anthology ()
     sed -i 's/\\printbibliography.*$//g' $tmpName
     sed -i 's/\\end{document}//g' $tmpName
     sed -i 's|\\includegraphics\(.*\)'"$images_files_path"'\(.*\)|\\includegraphics\1\2|g' $tmpName
+    sed -i 's|\\includesvg\(.*\)'"$images_files_path"'\(.*\)|\\includesvg\1\2|g' $tmpName
     sed -i 's|\\lstinputlisting\(.*\)'"$other_files_path"'\(.*\)|\\lstinputlisting\1\2|g' $tmpName
     sed -i 's|\\inputminted\(.*\)\('"$other_files_path"'\)\(.*\)|\\inputminted\1'"./$year_to_compile/"'\2\3|g' $tmpName
     # with options: options can contain a {, so need to handle them first
