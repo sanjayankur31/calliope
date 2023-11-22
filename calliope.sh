@@ -594,8 +594,7 @@ usage ()
 
     -l  Compile latest entry
 
-    -C  <commit message>
-        Compile latest entry and commit to repository.
+    -C  Compile latest entry and commit to repository.
         An optional commit message may be given using the commit_message
         variable:
         commit_message="Test" ./calliope.sh -C
@@ -604,11 +603,10 @@ usage ()
         Note that encryption, if enabled, is only done before committing.
         So, please remember to commit early and commit often.
 
-    -m  <commit message>
-        Commit to repository (but do not compile).
+    -m  Commit to repository (but do not compile).
         An optional commit message may be given using the commit_message
         variable:
-        commit_message="Test" ./calliope.sh -C
+        commit_message="Test" ./calliope.sh -m
         If one is not given, the default is used: "$default_commit_message".
 
         Note that encryption, if enabled, is only done before committing.
