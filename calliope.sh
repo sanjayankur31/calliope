@@ -589,8 +589,8 @@ add_extra_file () {
     full_path="$2"
     filename=$(basename -- "$full_path")
     extension="${filename##*.}"
-    mv -v "$1" "$diary_dir/$year/$dirpath/$timestamp.$extension"
-    git add --intent-to-add "$diary_dir/$year/$dirpath/$timestamp.$extension"
+    cp -v "$2" "$diary_dir/$year/$dirpath/$timestamp.$extension"
+    git add "$diary_dir/$year/$dirpath/$timestamp.$extension"
 }
 
 usage ()
@@ -769,7 +769,7 @@ do
             exit 0
             ;;
         i)
-            add_extra_file "$OPTARG"
+            add_extra_file "image" "$OPTARG"
             exit 0
             ;;
         I)
