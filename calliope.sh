@@ -6,6 +6,7 @@ MY_VIEWER="xdg-open"
 year=$(date +%G)
 month=$(date +%m)
 day=$(date +%d)
+timestamp=$(date +%Y%m%d%H%M)
 diary_dir="diary"
 pdf_dir="pdfs"
 todays_entry="$year-$month-$day.tex"
@@ -42,7 +43,6 @@ else
     echo "encryptionId=\"\"" >> .callioperc
     exit 0
 fi
-
 
 add_entry ()
 {
@@ -399,7 +399,7 @@ create_anthology ()
     echo " " >> $FileName
 
     echo "\rhead{\textsc{$year_to_compile}}" >> $FileName
-    echo "\chead{\textsc{$ProjectName Diary}}" >> $FileName
+    echo "\chead{\textsc{$ProjectName}}" >> $FileName
     echo "\lhead{\textsc{\userName}}" >> $FileName
     echo "\rfoot{\textsc{\thepage}}" >> $FileName
     echo "\cfoot{\textit{Last modified: \today}}" >> $FileName
@@ -579,6 +579,20 @@ commit_changes ()
     fi
 }
 
+add_extra_file () {
+    dirpath="$images_files_path"
+    if [ "other" == "$1" ]
+    then
+        dirpath="$other_files_path"
+    fi
+
+    full_path="$2"
+    filename=$(basename -- "$full_path")
+    extension="${filename##*.}"
+    mv -v "$1" "$diary_dir/$year/$dirpath/$timestamp.$extension"
+    git add --intent-to-add "$diary_dir/$year/$dirpath/$timestamp.$extension"
+}
+
 usage ()
 {
     cat << EOF
@@ -652,6 +666,12 @@ usage ()
     -x
         clean folder: remove any unencrypted files if encryption is enabled
 
+    -i <image file path>
+        imports the image into the diary image folder and renames it "<timestamp>.extension"
+
+    -I <non image file path>
+        imports the non-image into the diary extra files folder and renames it "<timestamp>.extension"
+
 EOF
 
 }
@@ -661,7 +681,7 @@ if [ "$#" -eq 0 ]; then
     exit 0
 fi
 
-while getopts "evLltca:A:hp:s:E:V:k:CG:g:xm" OPTION
+while getopts "evLltca:A:hp:s:E:V:k:CG:g:xmi:I:" OPTION
 do
     case $OPTION in
         t)
@@ -746,6 +766,14 @@ do
             ;;
         x)
             remove_unencrypted
+            exit 0
+            ;;
+        i)
+            add_extra_file "$OPTARG"
+            exit 0
+            ;;
+        I)
+            add_extra_file "other" "$OPTARG"
             exit 0
             ;;
         ?)
