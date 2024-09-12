@@ -542,7 +542,7 @@ search_diary ()
         echo "$search_tool not found."
         exit -1
     else
-        echo "Running search command: $search_command $search_options -- $search_term $diary_dir/*/"
+        echo "Running search command: $search_command $search_options -- \"$search_term\" $diary_dir/*/"
         $search_command $search_options -- "$search_term" $diary_dir/*/
     fi
 }
