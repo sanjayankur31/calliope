@@ -3,7 +3,7 @@
 VERSION=1.2.5
 MY_EDITOR="vimx --servername $(pwgen 8 1)"
 MY_VIEWER="xdg-open"
-year=$(date +%G)
+year=$(date +%Y)
 month=$(date +%m)
 day=$(date +%d)
 timestamp=$(date +%Y%m%d%H%M%S)
