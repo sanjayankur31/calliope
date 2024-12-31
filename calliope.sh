@@ -1,5 +1,6 @@
 #!/bin/bash
 
+SHORT_DESC="Journaling using LaTeX and git"
 VERSION=1.2.5
 MY_EDITOR="vimx --servername $(pwgen 8 1)"
 MY_VIEWER="xdg-open"
@@ -108,6 +109,7 @@ clean ()
 compile_today ()
 {
     cd "$diary_dir/$year/" || exit -1
+    decrypt "$todays_entry"
     echo "Compiling $todays_entry."
     if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$todays_entry" ; then
         echo "Compilation failed. Exiting."
@@ -136,6 +138,7 @@ compile_latest ()
 {
     cd "$diary_dir/$year/" || exit -1
     latest_entry=$(ls $year*tex | tail -1)
+    decrypt "$latest_entry"
     echo "Compiling $latest_entry."
 
     if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$latest_entry" ; then
@@ -213,6 +216,7 @@ compile_specific ()
     fi
 
     cd "$diary_dir/$year/" || exit -1
+    decrypt "$entry_to_compile"
     echo "Compiling $entry_to_compile"
     if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$entry_to_compile"; then
         echo "Compilation failed. Exiting."
@@ -596,13 +600,19 @@ add_extra_file () {
 usage ()
 {
     cat << EOF
-    usage: $0 options
+    calliope: ${SHORT_DESC}
+
+    Usage: calliope [options] [arguments]
 
     Master script file that provides functions to maintain a journal using LaTeX.
+
     Version: $VERSION
 
     OPTIONS:
+
     -h  Show this message and quit
+
+    -H  Print version and exit
 
     -t  Add new entry for today
 
@@ -640,36 +650,35 @@ usage ()
     -s  <entry> (yyyy-mm-dd)
         Compile specific entry
 
-    -e edit the latest entry using \$MY_EDITOR
+    -e  edit the latest entry using \$MY_EDITOR
 
-    -E <entry> (yyyy-mm-dd)
+    -E  <entry> (yyyy-mm-dd)
         edit specific entry using \$MY_EDITOR
 
-    -v view the latest entry using \$MY_VIEWER
+    -v  view the latest entry using \$MY_VIEWER
 
-    -V <entry> (yyyy-mm-dd)
+    -V  <entry> (yyyy-mm-dd)
         view specific entry using \$MY_VIEWER
 
-    -k <search term>
+    -k  <search term>
         search diary for term using $search_tool
         Please see the documentation of the search tool you use
         to see what search terms/regular expressions are supported.
 
         Note: only works when encryption is *not* enabled.
 
-    -G <file to decrypt>
+    -G  <file to decrypt>
         decrypt a file
 
-    -g <file to encrypt>
+    -g  <file to encrypt>
         encrypt a file
 
-    -x
-        clean folder: remove any unencrypted files if encryption is enabled
+    -x  clean folder: remove any unencrypted files if encryption is enabled
 
-    -i <image file path>
+    -i  <image file path>
         imports the image into the diary image folder and renames it "<timestamp>.extension"
 
-    -I <non image file path>
+    -I  <non image file path>
         imports the non-image into the diary extra files folder and renames it "<timestamp>.extension"
 
 EOF
@@ -681,7 +690,7 @@ if [ "$#" -eq 0 ]; then
     exit 0
 fi
 
-while getopts "evLltca:A:hp:s:E:V:k:CG:g:xmi:I:" OPTION
+while getopts "evLltca:A:hHp:s:E:V:k:CG:g:xmi:I:" OPTION
 do
     case $OPTION in
         t)
@@ -720,6 +729,10 @@ do
             ;;
         h)
             usage
+            exit 0
+            ;;
+        H)
+            echo "${VERSION}"
             exit 0
             ;;
         p)
