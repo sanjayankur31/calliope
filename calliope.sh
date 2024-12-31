@@ -1,6 +1,7 @@
 #!/bin/bash
 
 SHORT_DESC="Journaling using LaTeX and git"
+UPSTREAM_URL="https://github.com/sanjayankur31/calliope"
 VERSION=1.2.5
 MY_EDITOR="vimx --servername $(pwgen 8 1)"
 MY_VIEWER="xdg-open"
@@ -604,9 +605,11 @@ usage ()
 
     Usage: calliope [options] [arguments]
 
-    Master script file that provides functions to maintain a journal using LaTeX.
-
     Version: $VERSION
+
+    Master script file that provides functions to maintain a journal using LaTeX.
+    Please report issues and request features at ${UPSTREAM_URL}.
+
 
     OPTIONS:
 
