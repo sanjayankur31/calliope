@@ -2,7 +2,7 @@
 
 SHORT_DESC="Journaling using LaTeX and git"
 UPSTREAM_URL="https://github.com/sanjayankur31/calliope"
-VERSION=1.2.6
+VERSION=1.2.7
 MY_EDITOR="vimx --servername $(pwgen 8 1)"
 MY_VIEWER="xdg-open"
 year=$(date +%Y)
