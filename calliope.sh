@@ -283,7 +283,7 @@ encrypt_all ()
         echo "Encryption is not enabled"
     else
         echo "Encrypting all unencrypted files with $encryptionId"
-        find pdfs/ diary/ -type f -and -not -type l -and -not -name "*.gpg" | while read f
+        find "$pdf_dir/" "$diary_dir/" -type f -and -not -type l -and -not -name "*.gpg" | while read f
         do
             directory="$(dirname $f)"
             file="$(basename $f)"
@@ -357,7 +357,7 @@ decrypt_all ()
         echo "Encryption is not enabled"
     else
         echo "Decrypting all encrypted files"
-        find pdfs/ diary/ -type f -and -not -type l -and -name "*.gpg" | while read f
+        find "$pdf_dir/" "$diary_dir/" -type f -and -not -type l -and -name "*.gpg" | while read f
         do
             directory="$(dirname $f)"
             file="$(basename $f)"
