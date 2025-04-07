@@ -74,7 +74,7 @@ add_entry ()
         cd "$diary_dir/$year" || exit -1
         filename="$year-$month-$day.tex"
 
-        if [ -f "$filename" ]; then
+        if [ -f "$filename" ] || [ -f "$filename.gpg" ]; then
             echo "File for today already exists: $diary_dir/$year/$filename."
             echo "Happy writing!"
         else
