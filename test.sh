@@ -13,6 +13,9 @@ year=$(date +%G)
 diary_dir="diary"
 current_folder="$(pwd)"
 
+echo "Correcting bibliography dir for tests"
+find "$diary_dir/" -name "*.tex" -execdir sed -i "s|\(addbibresource\){.*}|\1{$current_folder/testbib.bib}|" '{}' \;
+
 # update config file for CI
 echo 'author="Test"' > .callioperc
 echo 'ProjectName="Test project"' >> .callioperc
