@@ -1,10 +1,12 @@
 #!/bin/bash
 
-# Copyright 2021 Ankur Sinha
+# Copyright 2025 Ankur Sinha
 # Author: Ankur Sinha <sanjay DOT ankur AT gmail DOT com> 
 # File : test.sh
 #
 # Test script to test basic calliope functionality
+
+set -e
 
 # The latest (and only entry)
 year=$(date +%G)
