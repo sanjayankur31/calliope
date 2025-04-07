@@ -2,7 +2,7 @@
 
 SHORT_DESC="Journaling using LaTeX and git"
 UPSTREAM_URL="https://github.com/sanjayankur31/calliope"
-VERSION=1.2.5
+VERSION=1.2.6
 MY_EDITOR="vimx --servername $(pwgen 8 1)"
 MY_VIEWER="xdg-open"
 year=$(date +%Y)
@@ -12,10 +12,10 @@ timestamp=$(date +%Y%m%d%H%M%S)
 diary_dir="diary"
 pdf_dir="pdfs"
 todays_entry="$year-$month-$day.tex"
-latest_diary_entry=$(find $diary_dir -name "????-??-??.tex" | sort -h | head -1)
+latest_diary_entry=$(find $diary_dir -name "????-??-??.tex" | sort | tail -1)
 latest_entry_year=${latest_diary_entry:6:4}
 latest_diary_entry_file=${latest_diary_entry:11}
-latest_pdf_entry=$(find $pdf_dir -name "????-??-??.pdf" | sort -h | head -1)
+latest_pdf_entry=$(find $pdf_dir -name "????-??-??.pdf" | sort | tail -1)
 latest_pdf_year=${latest_pdf_entry:5:4}
 latest_pdf_entry_file=${latest_pdf_entry:9}
 year_to_compile="meh"
