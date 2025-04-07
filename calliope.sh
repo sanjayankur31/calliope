@@ -12,6 +12,12 @@ timestamp=$(date +%Y%m%d%H%M%S)
 diary_dir="diary"
 pdf_dir="pdfs"
 todays_entry="$year-$month-$day.tex"
+latest_diary_entry=$(find $diary_dir -name "????-??-??.tex" | sort -h | head -1)
+latest_entry_year=${latest_diary_entry:6:4}
+latest_diary_entry_file=${latest_diary_entry:11}
+latest_pdf_entry=$(find $pdf_dir -name "????-??-??.pdf" | sort -h | head -1)
+latest_pdf_year=${latest_pdf_entry:5:4}
+latest_pdf_entry_file=${latest_pdf_entry:9}
 year_to_compile="meh"
 entry_to_compile="meh"
 entry_to_edit="meh"
@@ -129,32 +135,30 @@ compile_today ()
 
 list_latest ()
 {
-    latest_diary_entry=$(ls $diary_dir/$year/$year*tex | tail -1)
-    latest_pdf_entry=$(ls $pdf_dir/$year/$year*pdf | tail -1)
-    echo "Latest entry: "
-    echo "source - $MY_EDITOR $latest_diary_entry"
-    echo "PDF - $MY_VIEWER $latest_pdf_entry"
+    echo "Latest entries: "
+    echo "source ($latest_entry_year): $latest_diary_entry"
+    echo "PDF ($latest_pdf_year): $latest_pdf_entry"
 }
 compile_latest ()
 {
-    cd "$diary_dir/$year/" || exit -1
-    latest_entry=$(ls $year*tex | tail -1)
-    decrypt "$latest_entry"
-    echo "Compiling $latest_entry."
 
-    if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$latest_entry" ; then
-        echo "Compilation failed. Exiting."
-        cd ../../ || exit -1
-        exit -1
-    fi
-    clean
+    pushd "$diary_dir/$latest_entry_year/"
+        decrypt "$latest_diary_entry_file"
+        echo "Compiling $latest_diary_entry_file."
 
-    if [ ! -d "../../$pdf_dir/$year" ]; then
-        mkdir -p "../../$pdf_dir/$year"
-    fi
-    mv -- *.pdf "../../$pdf_dir/$year/"
-    echo "Generated pdf moved to pdfs directory."
-    cd ../../ || exit -1
+        if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$latest_diary_entry_file" ; then
+            echo "Compilation failed. Exiting."
+            cd ../../ || exit -1
+            exit -1
+        fi
+        clean
+
+        if [ ! -d "../../$pdf_dir/$latest_entry_year" ]; then
+            mkdir -p "../../$pdf_dir/$latest_entry_year"
+        fi
+        mv -- *.pdf "../../$pdf_dir/$latest_entry_year/"
+        echo "Generated pdf moved to pdfs directory."
+    popd
 
 }
 
@@ -485,10 +489,9 @@ create_anthology ()
 
 edit_latest ()
 {
-    pushd $diary_dir/$year/
-        latest_diary_entry=$(ls $year*tex* | tail -1)
-        decrypt "$latest_diary_entry"
-        outputfile="$(basename $latest_diary_entry .gpg)"
+    pushd $diary_dir/$latest_entry_year/
+        decrypt "$latest_diary_entry_file"
+        outputfile="$(basename $latest_diary_entry_file .gpg)"
         $MY_EDITOR "$outputfile"
     popd
 }
