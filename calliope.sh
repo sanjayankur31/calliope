@@ -11,13 +11,6 @@ day=$(date +%d)
 timestamp=$(date +%Y%m%d%H%M%S)
 diary_dir="diary"
 pdf_dir="pdfs"
-todays_entry="$year-$month-$day.tex"
-latest_diary_entry=$(find $diary_dir -name "????-??-??.tex" | sort | tail -1)
-latest_entry_year=${latest_diary_entry:6:4}
-latest_diary_entry_file=${latest_diary_entry:11}
-latest_pdf_entry=$(find $pdf_dir -name "????-??-??.pdf" | sort | tail -1)
-latest_pdf_year=${latest_pdf_entry:5:4}
-latest_pdf_entry_file=${latest_pdf_entry:9}
 year_to_compile="meh"
 entry_to_compile="meh"
 entry_to_edit="meh"
@@ -51,6 +44,24 @@ else
     echo "encryptionId=\"\"" >> .callioperc
     exit 0
 fi
+
+if [ -z ${encryptionId} ]
+then
+    echo "Encryption is not enabled"
+    latest_diary_entry=$(find $diary_dir -name "????-??-??.tex" | sort | tail -1)
+    latest_pdf_entry=$(find $pdf_dir -name "????-??-??.pdf" | sort | tail -1)
+else
+    echo "Encryption is enabled"
+    latest_diary_entry=$(find $diary_dir -name "????-??-??.tex.gpg" | sort | tail -1)
+    latest_pdf_entry=$(find $pdf_dir -name "????-??-??.pdf.gpg" | sort | tail -1)
+fi
+echo "latest diary entry is: $latest_diary_entry"
+echo "latest pdf entry: $latest_pdf_entry"
+todays_entry="$year-$month-$day.tex"
+latest_entry_year=${latest_diary_entry:6:4}
+latest_diary_entry_file=${latest_diary_entry:11}
+latest_pdf_year=${latest_pdf_entry:5:4}
+latest_pdf_entry_file=${latest_pdf_entry:9}
 
 add_entry ()
 {
