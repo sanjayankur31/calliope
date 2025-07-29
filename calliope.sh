@@ -155,9 +155,10 @@ compile_latest ()
 
     pushd "$diary_dir/$latest_entry_year/"
         decrypt "$latest_diary_entry_file"
-        echo "Compiling $latest_diary_entry_file."
+        outputfile="$(basename $latest_diary_entry_file .gpg)"
+        echo "Compiling $outputfile."
 
-        if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$latest_diary_entry_file" ; then
+        if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$outputfile" ; then
             echo "Compilation failed. Exiting."
             cd ../../ || exit -1
             exit -1
@@ -173,6 +174,7 @@ compile_latest ()
 
 }
 
+# TODO: handle encryption
 compile_all ()
 {
     if [ ! -d "$diary_dir/$year_to_compile/" ]; then
@@ -233,8 +235,9 @@ compile_specific ()
 
     cd "$diary_dir/$year/" || exit -1
     decrypt "$entry_to_compile"
-    echo "Compiling $entry_to_compile"
-    if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$entry_to_compile"; then
+    outputfile="$(basename $entry_to_compile .gpg)"
+    echo "Compiling $outputfile"
+    if ! latexmk -pdf -recorder -pdflatex="pdflatex -interaction=nonstopmode --shell-escape -synctex=1" -use-make -bibtex "$outputfile"; then
         echo "Compilation failed. Exiting."
         cd ../../ || exit -1
         exit -1
