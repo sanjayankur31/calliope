@@ -30,31 +30,6 @@ GPG_COMMAND="gpg2"
 default_commit_message="Add new entry"
 useParallel=true
 
-# configuration file to override the above defined variables.
-if [ -f .callioperc ]
-then
-    source .callioperc
-else
-    echo "No .callioperc file found. Creating file with empty fields."
-    echo "Please fill in the necessary information."
-    echo "It will be used in subsequent runs."
-    echo "ProjectName=\"\"" > .callioperc
-    echo "author=\"\"" >> .callioperc
-    echo "bibsrc=\"\"" >> .callioperc
-    echo "encryptionId=\"\"" >> .callioperc
-    exit 0
-fi
-
-latest_diary_entry=$(find $diary_dir -name "????-??-??.tex" -o -name "????-??-??.tex.gpg" | sort | tail -1)
-latest_pdf_entry=$(find $pdf_dir -name "????-??-??.pdf" -o -name "????-??-??.pdf.gpg"  | sort | tail -1)
-todays_entry="$year-$month-$day.tex"
-latest_entry_year=${latest_diary_entry:6:4}
-latest_diary_entry_file=${latest_diary_entry:11}
-latest_pdf_year=${latest_pdf_entry:5:4}
-latest_pdf_entry_file=${latest_pdf_entry:9}
-
-#echo "latest diary entry is: $latest_diary_entry"
-#echo "latest pdf entry: $latest_pdf_entry"
 
 add_entry ()
 {
@@ -654,12 +629,42 @@ usage ()
     Master script file that provides functions to maintain a journal using LaTeX.
     Please report issues and request features at ${UPSTREAM_URL}.
 
+    CONFIGURATION:
 
-    OPTIONS:
+    Each journal needs a configuration file that lives in the project root folder called .callioperc:
+
+    ProjectName="myproject" > .callioperc
+    author="my name" >> .callioperc
+    bibsrc="/path/to/bibliography.bib" >> .callioperc
+    encryptionId="encryption_key_id" >> .callioperc
+
+    This file is sourced by the script, so please do not use special characters such as '|' that the shell may interpret.
+
+    GLOBAL JOURNAL LIST:
+
+    To use the -j flag to list "configured" journals, you can create a ~/.callioperc.journals file.
+    It is a line by line list of journals that you want the script to be aware of.
+    This doesn't do anything fancy, it only lists the paths to these journals so that you can get to them quicker.
+    The file should be of the form:
+
+    journal1=/path/to/journal1/
+    journal2=/path/to/journal2/
+
+    Please do not use quotes here, and please avoid spaces.
+
+    GLOBAL OPTIONS:
 
     -h  Show this message and quit
 
     -H  Print version and exit
+
+    -j  <journal name>
+        show path to journal name: requires setting a global .callioperc.journals file
+
+
+    JOURNAL OPTIONS:
+
+    These options need a .callioperc configuration file
 
     -t  Add new entry for today
 
@@ -728,124 +733,168 @@ usage ()
     -I  <non image file path>
         imports the non-image into the diary extra files folder and renames it "<timestamp>.extension"
 
-    -j  <journal name>
-        show path to journal name: requires setting a global .callioperc.journals file
-
 EOF
 
 }
 
-if [ "$#" -eq 0 ]; then
-    usage
-    exit 0
-fi
+# configuration file to override the defined variables.
+if [ -f .callioperc ]
+then
+    if [ "$#" -eq 0 ]; then
+        usage
+        exit 0
+    fi
 
-while getopts "evLltca:A:hHp:s:E:V:k:CG:g:xmi:I:j:" OPTION
-do
-    case $OPTION in
-        t)
-            add_entry
-            exit 0
-            ;;
-        L)
-            list_latest
-            exit 0
-            ;;
-        e)
-            edit_latest
-            exit 0
-            ;;
-        v)
-            view_latest
-            exit 0
-            ;;
-        l)
-            compile_latest
-            exit 0
-            ;;
-        c)
-            compile_today
-            exit 0
-            ;;
-        a)
-            year_to_compile=$OPTARG
-            create_anthology
-            exit 0
-            ;;
-        A)
-            year_to_compile=$OPTARG
-            view_anthology
-            exit 0
-            ;;
-        h)
-            usage
-            exit 0
-            ;;
-        H)
-            echo "${VERSION}"
-            exit 0
-            ;;
-        p)
-            year_to_compile=$OPTARG
-            compile_all
-            exit 0
-            ;;
-        s)
-            entry_to_compile=$OPTARG
-            compile_specific
-            exit 0
-            ;;
-        E)
-            entry_to_edit=$OPTARG
-            edit_specific
-            exit 0
-            ;;
-        V)
-            entry_to_view=$OPTARG
-            view_specific
-            exit 0
-            ;;
-        k)
-            search_term=$OPTARG
-            search_diary
-            exit 0
-            ;;
-        C)
-            compile_latest
-            commit_changes
-            exit 0
-            ;;
-        m)
-            commit_changes
-            exit 0
-            ;;
-        G)
-            decrypt "$OPTARG"
-            exit 0
-            ;;
-        g)
-            encrypt "$OPTARG"
-            exit 0
-            ;;
-        x)
-            remove_unencrypted
-            exit 0
-            ;;
-        i)
-            add_extra_file "image" "$OPTARG"
-            exit 0
-            ;;
-        I)
-            add_extra_file "other" "$OPTARG"
-            exit 0
-            ;;
-        j)
-            switch_journal "$OPTARG"
-            exit 0
-            ;;
-        ?)
-            usage
-            exit 0
-            ;;
-    esac
-done
+    source .callioperc
+
+    latest_diary_entry=$(find $diary_dir -name "????-??-??.tex" -o -name "????-??-??.tex.gpg" | sort | tail -1)
+    latest_pdf_entry=$(find $pdf_dir -name "????-??-??.pdf" -o -name "????-??-??.pdf.gpg"  | sort | tail -1)
+    todays_entry="$year-$month-$day.tex"
+    latest_entry_year=${latest_diary_entry:6:4}
+    latest_diary_entry_file=${latest_diary_entry:11}
+    latest_pdf_year=${latest_pdf_entry:5:4}
+    latest_pdf_entry_file=${latest_pdf_entry:9}
+
+    #echo "latest diary entry is: $latest_diary_entry"
+    #echo "latest pdf entry: $latest_pdf_entry"
+    while getopts "evLltca:A:hHp:s:E:V:k:CG:g:xmi:I:j:" OPTION
+    do
+        case $OPTION in
+            t)
+                add_entry
+                exit 0
+                ;;
+            L)
+                list_latest
+                exit 0
+                ;;
+            e)
+                edit_latest
+                exit 0
+                ;;
+            v)
+                view_latest
+                exit 0
+                ;;
+            l)
+                compile_latest
+                exit 0
+                ;;
+            c)
+                compile_today
+                exit 0
+                ;;
+            a)
+                year_to_compile=$OPTARG
+                create_anthology
+                exit 0
+                ;;
+            A)
+                year_to_compile=$OPTARG
+                view_anthology
+                exit 0
+                ;;
+            h)
+                usage
+                exit 0
+                ;;
+            H)
+                echo "${VERSION}"
+                exit 0
+                ;;
+            p)
+                year_to_compile=$OPTARG
+                compile_all
+                exit 0
+                ;;
+            s)
+                entry_to_compile=$OPTARG
+                compile_specific
+                exit 0
+                ;;
+            E)
+                entry_to_edit=$OPTARG
+                edit_specific
+                exit 0
+                ;;
+            V)
+                entry_to_view=$OPTARG
+                view_specific
+                exit 0
+                ;;
+            k)
+                search_term=$OPTARG
+                search_diary
+                exit 0
+                ;;
+            C)
+                compile_latest
+                commit_changes
+                exit 0
+                ;;
+            m)
+                commit_changes
+                exit 0
+                ;;
+            G)
+                decrypt "$OPTARG"
+                exit 0
+                ;;
+            g)
+                encrypt "$OPTARG"
+                exit 0
+                ;;
+            x)
+                remove_unencrypted
+                exit 0
+                ;;
+            i)
+                add_extra_file "image" "$OPTARG"
+                exit 0
+                ;;
+            I)
+                add_extra_file "other" "$OPTARG"
+                exit 0
+                ;;
+            j)
+                switch_journal "$OPTARG"
+                exit 0
+                ;;
+            ?)
+                usage
+                exit 0
+                ;;
+        esac
+    done
+else
+    echo "WARNING: No .callioperc file found: so we are not in a journal folder."
+    echo "WARNING: Not all options can be used"
+    echo
+
+    if [ "$#" -eq 0 ]; then
+        usage
+        exit 0
+    fi
+
+    while getopts "hHj:" OPTION
+    do
+        case $OPTION in
+            h)
+                usage
+                exit 0
+                ;;
+            H)
+                echo "${VERSION}"
+                exit 0
+                ;;
+            j)
+                switch_journal "$OPTARG"
+                exit 0
+                ;;
+            ?)
+                usage
+                exit 0
+                ;;
+        esac
+    done
+fi
