@@ -53,8 +53,8 @@ latest_diary_entry_file=${latest_diary_entry:11}
 latest_pdf_year=${latest_pdf_entry:5:4}
 latest_pdf_entry_file=${latest_pdf_entry:9}
 
-echo "latest diary entry is: $latest_diary_entry"
-echo "latest pdf entry: $latest_pdf_entry"
+#echo "latest diary entry is: $latest_diary_entry"
+#echo "latest pdf entry: $latest_pdf_entry"
 
 add_entry ()
 {
@@ -608,6 +608,40 @@ add_extra_file () {
     git add "$diary_dir/$year/$dirpath/$timestamp.$extension"
 }
 
+switch_journal () {
+    journal_name="$1"
+    journal_path=""
+    global_journal_list="$HOME/.callioperc.journals"
+
+    if [ -f $global_journal_list ]
+    then
+        journal_path="$(grep $journal_name $global_journal_list | cut -d'=' -f2)"
+
+        if [ -n "${journal_path}" ]
+        then
+            journal_path="${journal_path/#\$HOME/$HOME}"
+            journal_path="${journal_path/#\~/$HOME}"
+
+            echo "Command to switch to journal \"${journal_name}\":"
+            echo "cd $journal_path"
+        else
+            echo "Journal \"${journal_name}\" not found in ${global_journal_list}"
+            echo "Configured journals are:"
+            echo
+            cat $global_journal_list
+            exit 1
+        fi
+    else
+        echo "No ~/.callioperc.journals file found"
+        echo
+        echo "Please create a file of the form:"
+        echo "journal_name=\"/path/to/journal/\""
+        echo
+        echo "Each journal should be mentioned on a new line, with no spaces in the line (as it is parsed by a shell script)."
+        exit 1
+    fi
+}
+
 usage ()
 {
     cat << EOF
@@ -694,6 +728,9 @@ usage ()
     -I  <non image file path>
         imports the non-image into the diary extra files folder and renames it "<timestamp>.extension"
 
+    -j  <journal name>
+        show path to journal name: requires setting a global .callioperc.journals file
+
 EOF
 
 }
@@ -703,7 +740,7 @@ if [ "$#" -eq 0 ]; then
     exit 0
 fi
 
-while getopts "evLltca:A:hHp:s:E:V:k:CG:g:xmi:I:" OPTION
+while getopts "evLltca:A:hHp:s:E:V:k:CG:g:xmi:I:j:" OPTION
 do
     case $OPTION in
         t)
@@ -800,6 +837,10 @@ do
             ;;
         I)
             add_extra_file "other" "$OPTARG"
+            exit 0
+            ;;
+        j)
+            switch_journal "$OPTARG"
             exit 0
             ;;
         ?)
